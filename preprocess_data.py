@@ -55,7 +55,7 @@ class Preprocessor():
                 content = "\n".join([node.text for node in tree.findall('.//text/body/p')])
             #otherwise
             else:
-                with open(filename, 'rb') as fout:
+                with open(filename, 'r',encoding='utf-8') as fout:
                     print("****", filename)
                     content = fout.read().decode() #convert text from bytes into string
                     
@@ -76,7 +76,7 @@ class Preprocessor():
                     outFile.close()
                     word_count = 0
                     outFiles_count += 1
-                    outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'wb')
+                    outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
             print("DONE:", word_count)
 
 
