@@ -79,6 +79,7 @@ class Preprocessor():
                     outFiles_count += 1
                     outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
             #print("DONE:", word_count)
+        self.num_files = outFiles_count
         print("Done %d files." %(outFiles_count))
 
     def split(self, test_ratio=0.2, train_ratio=0.7):
@@ -93,7 +94,7 @@ class Preprocessor():
         assert 0 <= test_ratio <= 1 and 0 <= train_ratio <= 1, 'Invalid Number for ratio'
         
         val_ratio = 1 - train_ratio - test_ratio
-        num_files = len(os.listdir(self.out_dir))
+        num_files = self.num_files
         #num_files = 10
 
         train, val, test = np.split(range(1, num_files+1), 
