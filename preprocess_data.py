@@ -44,7 +44,7 @@ class Preprocessor():
         # -> 8 directories
         outFiles_count = 1
         word_count = 0
-        outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'wb')
+        outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
         for filename in files:
             #if filename is a directory
             if os.path.isdir(filename):
