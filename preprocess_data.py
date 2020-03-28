@@ -79,7 +79,7 @@ class Preprocessor():
                     outFiles_count += 1
                     outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
             #print("DONE:", word_count)
-        print("Done.")
+        print("Done %d files." %(outFiles_count))
 
     def split(self, test_ratio=0.2, train_ratio=0.7):
         """
