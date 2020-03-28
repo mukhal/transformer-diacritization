@@ -95,11 +95,14 @@ if __name__ == '__main__':
     letters_dict = Counter()
     diacritics_dict = Counter()
 
+    train_sents, train_labels=[], []
 
     # iterate over training set and build dictionary
     for fname in os.listdir(os.path.join(args.corpus_dir, 'train')):
         fname = os.path.join(args.corpus_dir, 'train', fname)
-        _, _ = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
+        sent, lbl = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
+        train_sents.append(sent)
+        train_labels.append(lbl)
             
             
     common_letters, _ = zip(*letters_dict.most_common(args.vocab_size))
@@ -128,17 +131,23 @@ if __name__ == '__main__':
     pkl.dump(diacritics_to_id, open(os.path.join(args.outdir, 'labels_dict.pkl'), 'wb+'))
 
 
+    #train split 
+
     for split in ['train','val', 'test']:
 
         logging.info("processing split %s..." %(split))
         
         all_sents, all_labels=[], []
 
-        for fname in os.listdir(os.path.join(args.corpus_dir, split)):
-            fname = os.path.join(args.corpus_dir, split,  fname)
-            sent, lbl = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
-            all_sents.extend(sent)
-            all_labels.extend(lbl)
+        if split=='train': # use already obtained sents
+            all_sents, all_labels = train_sents, train_labels
+        
+        else: 
+            for fname in os.listdir(os.path.join(args.corpus_dir, split)):
+                fname = os.path.join(args.corpus_dir, split,  fname)
+                sent, lbl = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
+                all_sents.extend(sent)
+                all_labels.extend(lbl)
 
         all_sents_ids = []
         all_labels_ids = []
