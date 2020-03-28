@@ -101,6 +101,9 @@ class Preprocessor():
             [int(train_ratio* num_files), 
             int((train_ratio + val_ratio)* num_files)])
         
+        assert test[-1] == num_files # make sure last file is not beyond num_files
+
+        
         print(train, val, test)
         train_dir = os.path.join(self.out_dir, 'train')
         create_dir(train_dir)
