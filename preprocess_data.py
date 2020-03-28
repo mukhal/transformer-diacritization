@@ -117,31 +117,7 @@ class Preprocessor():
 
         for f_i in map(str, test): 
             os.rename(os.path.join(self.out_dir, f_i), os.path.join(test_dir, f_i))
-            
-
-    def remove_diacritization(self):
-        """This method aims at removing any diacritization from
-        the test files, then write the cleaned version into
-        another directory.
-        We read from the 'gold' directory and write the cleaned
-        version into 'test'
-        """
-        gold_dir = os.path.join(self.out_dir, 'test', 'gold')
-        create_dir(gold_dir)
-        test_dir = os.path.join(self.out_dir, 'test', 'test')
-        create_dir(test_dir)
-        for in_filename in os.listdir(gold_dir):
-            print('FILE:', in_filename)
-            out_filename = os.path.join(test_dir, in_filename)
-            in_filename = os.path.join(gold_dir, in_filename)
-            with open(in_filename, 'r', encoding='utf-8') as fin:
-                with open(out_filename, 'w', encoding='utf-8') as fout:
-                    for word in fin.readlines():
-                        word = word
-                        cleaned = clean_word(word)
-                        fout.write(cleaned)
-
-            
+              
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--corpus', type=str, required=True)
@@ -150,6 +126,5 @@ if __name__ == "__main__":
     args= parser.parse_args()
 
     p = Preprocessor()
-    #p.preprocess(args.corpus)
+    p.preprocess(args.corpus)
     p.split(args.test_ratio)
-    p.remove_diacritization()
