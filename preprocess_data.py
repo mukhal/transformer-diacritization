@@ -94,7 +94,7 @@ class Preprocessor():
         
         val_ratio = 1 - train_ratio - test_ratio
         num_files = len(os.listdir(self.out_dir))
-        num_files = 10
+        #num_files = 10
 
         train, val, test = np.split(range(1, num_files+1), 
             [int(train_ratio* num_files), 
@@ -107,8 +107,6 @@ class Preprocessor():
         create_dir(val_dir)
         test_dir = os.path.join(self.out_dir, 'test')
         create_dir(test_dir)
-        #test_dir = os.path.join(self.out_dir, 'test', 'gold')
-        #create_dir(test_dir)
         
         #move train, val and test files
         for f_i in map(str, train): 
