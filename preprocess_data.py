@@ -57,7 +57,7 @@ class Preprocessor():
             #otherwise
             else:
                 with open(filename, 'r',encoding='utf-8') as fout:
-                    #print("****", filename)
+                    print("****", filename, "\r")
                     content = fout.read() #convert text from bytes into string
                     
             for sentence in re.split(r'؟|!|\.+', content):
@@ -103,7 +103,7 @@ class Preprocessor():
         
         assert test[-1] == num_files # make sure last file is not beyond num_files
 
-        
+
         print(train, val, test)
         train_dir = os.path.join(self.out_dir, 'train')
         create_dir(train_dir)
