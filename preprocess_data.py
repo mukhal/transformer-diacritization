@@ -68,10 +68,10 @@ class Preprocessor():
                     #make sure that the sentence is diacritized
                     if re.search(self.VOWEL_REGEX, word):
                         INSIDE = True
-                        outFile.write(word.encode()+'\n'.encode())
+                        outFile.write(word +'\n')
                         word_count += 1
                 if INSIDE:
-                    outFile.write('\n'.encode())
+                    outFile.write('\n')
                 if word_count >= 10**6:
                     outFile.close()
                     word_count = 0
@@ -116,12 +116,12 @@ class Preprocessor():
             print('FILE:', in_filename)
             out_filename = os.path.join(test_dir, in_filename)
             in_filename = os.path.join(gold_dir, in_filename)
-            with open(in_filename, 'rb') as fin:
-                with open(out_filename, 'wb') as fout:
+            with open(in_filename, 'r', encoding='utf-8') as fin:
+                with open(out_filename, 'w', encoding='utf-8') as fout:
                     for word in fin.readlines():
-                        word = word.decode()
+                        word = word
                         cleaned = clean_word(word)
-                        fout.write(cleaned.encode())
+                        fout.write(cleaned)
 
             
 if __name__ == "__main__":
