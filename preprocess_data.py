@@ -5,8 +5,7 @@ import subprocess
 from glob import glob
 from xml.etree import ElementTree as ET
 from utils import *
-
-
+import argparse
 
 
 class Preprocessor():
@@ -14,7 +13,7 @@ class Preprocessor():
         self.VOWEL_REGEX = re.compile('|'.join(['ُ', 'َ', 'ِ', 'ْ']))
         #for removing numbers and punctuations except [., !, ؟]
         self.NOISE_REGEX = r'([\d\\/\(\)\[\]\|\-’÷×*+_<>«»@#$%^&:]+)'
-        self.out_dir = 'preprocessed'
+        self.out_dir = 'data/preprocessed'
         create_dir(self.out_dir) #create directory if it wasn't existed
 
     def preprocess(self, data_dir):
@@ -57,8 +56,9 @@ class Preprocessor():
             #otherwise
             else:
                 with open(filename, 'rb') as fout:
-                    print(filename)
+                    print("****", filename)
                     content = fout.read().decode() #convert text from bytes into string
+                    
             for sentence in re.split(r'؟|!|\.+', content):
                 sentence = re.sub(self.NOISE_REGEX, '', sentence) #remove numbers and punctuations
                 sentence = sentence.strip() #remove whitespaces at the end
@@ -99,13 +99,7 @@ class Preprocessor():
             create_dir(test_dir)
             test_dir = os.path.join(self.out_dir, 'test', 'gold')
             create_dir(test_dir)
-            n = int(num_files*(ratio))
-            #move train files
-            # os.system('mv apple/1 apple/train',)
-            # subprocess.call(["ls", "-t", "-v", train_dir, "1"])
-            # os.system( 'mv -t -v %s 1 2 3' % )
-            #move test files
-            # os.system( 'mv -t -v %s '+' '.join(range(n+1, num_files+1)) %test_dir)
+           
 
     def remove_diacritization(self):
         """This method aims at removing any diacritization from
@@ -130,12 +124,14 @@ class Preprocessor():
                         fout.write(cleaned.encode())
 
             
-
-
-
-
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--corpus', type=str, required=True)
+    parser.add_argument('--test-ratio', type=float, default=0.2)
+
+    args= parser.parse_args()
+
     p = Preprocessor()
-    p.preprocess('./tashkeela')
-    p.split(0.2)
+    p.preprocess(args.corpus)
+    p.split(args.test_ratio)
     p.remove_diacritization()
