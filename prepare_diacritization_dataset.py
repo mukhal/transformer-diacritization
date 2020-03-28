@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 import argparse
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 all_letters = Counter()
 all_diacritics= Counter()
 
@@ -83,7 +85,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--corpus-dir', type=str, required=True)
-    parser.add_argument('--max-sentece-length', type=int, default=256)
+    parser.add_argument('--max-sentence-length', type=int, default=256)
     parser.add_argument('--outdir', type=str, default='data/bin-dataset')
 
     args = parser.parse_args()
@@ -131,7 +133,7 @@ if __name__ == '__main__':
     all_sents_ids = pad_sequences(all_sents_ids, maxlen=MAX_SENT_LENGTH, padding='post', value=letters_to_id['PAD'])
     all_labels_ids = pad_sequences(all_labels_ids, maxlen=MAX_SENT_LENGTH, padding='post', value=diacritics_to_id['PAD'])
 
-    train_x_ids, val_x_ids, train_y_ids, val_y_ids = train_test_split(all_sents_ids, all_labels_ids, test_size=0.15)
+    train_x_ids, val_x_ids, train_y_ids, val_y_ids = train_test_split(all_sents_ids, all_labels_ids, test_size=0.10)
 
     train_x_tensor = torch.LongTensor(train_x_ids)
     train_y_tensor = torch.LongTensor(train_y_ids)
@@ -142,7 +144,7 @@ if __name__ == '__main__':
     logging.info("Writing files...")
 
     torch.save(train_x_tensor, open(os.path.join(args.outdir, 'train_x_ids.pt', 'wb+')))
-    torch.save(train_y_tensor, open(os.path.join(args.outdir, 'train_y_ids.pt', 'wb+'))
+    torch.save(train_y_tensor, open(os.path.join(args.outdir, 'train_y_ids.pt', 'wb+')))
 
     torch.save(val_x_tensor, open('pretraining_dataset/val_x_ids.pt', 'wb+'))
     torch.save(val_y_tensor, open('pretraining_dataset/val_y_ids.pt', 'wb+'))
