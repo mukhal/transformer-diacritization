@@ -42,6 +42,7 @@ class Preprocessor():
         # -> 56 files from 'diwanalarab'
         # -> 20 files from 'mohamed bn abdel-wahab'
         # -> 8 directories
+        print("Preprocessing...")
         outFiles_count = 1
         word_count = 0
         outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
@@ -56,7 +57,7 @@ class Preprocessor():
             #otherwise
             else:
                 with open(filename, 'r',encoding='utf-8') as fout:
-                    print("****", filename)
+                    #print("****", filename)
                     content = fout.read() #convert text from bytes into string
                     
             for sentence in re.split(r'؟|!|\.+', content):
@@ -77,8 +78,8 @@ class Preprocessor():
                     word_count = 0
                     outFiles_count += 1
                     outFile = open(os.path.join(self.out_dir, str(outFiles_count)), 'w', encoding='utf-8')
-            print("DONE:", word_count)
-
+            #print("DONE:", word_count)
+        print("Done.")
 
     def split(self, ratio=0.2):
         """
