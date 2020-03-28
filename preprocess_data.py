@@ -152,6 +152,6 @@ if __name__ == "__main__":
     args= parser.parse_args()
 
     p = Preprocessor()
-    p.preprocess(args.corpus)
+    #p.preprocess(args.corpus)
     p.split(args.test_ratio)
     p.remove_diacritization()
