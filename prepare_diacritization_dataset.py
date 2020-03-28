@@ -28,10 +28,50 @@ def get_word_labels(word):
     
     return cln_word, labels
 
+def build_vocab(train_files):
 
-def get_sent_labels_from_file(file_name, max_sentence_length, all_letters, all_diacritics):
+    letters_dict = Counter()
+    diacritics_dict = Counter()
+
+    for file_name in train_files: 
+
+        logging.info ("Reading file %s..." %(file_name))
+
+        with open(file_name, 'r', encoding='utf-8') as f:
+            for word in f: # move word by word
+                word = word.strip()
+                if not word: # end of sentence    
+                    continue
+
+                # get clean word and its diacritizations
+                cln_word, diacrtics = get_word_labels(word)
+                if not cln_word or not diacrtics: # empty word
+                    continue
+                # add letters and diacritization suymbols to dicts
+                for letter in cln_word:
+                    letters_dict[letter]+=1
+                
+                for letter in diacrtics:
+                    diacritics_dict[letter]+=1
+
+        return letters_dict, diacritics_dict
+
+def get_ids(sent, labels, letters_dict, diacritics_dict):
+    
+    sent = sum(sent, ())
+    labels = sum(labels, ())
+
+    sent_ids = [letters_dict[c] if c in letters_dict else letters_dict['<unk>'] for c in sent]
+    label_ids = [diacritics_dict[d] if d in diacritics_dict else diacritics_dict['O'] for d in labels] 
+
+    return sent_ids, label_ids
+
+
+
+def get_sent_labels_ids_from_file(file_name, max_sentence_length, letters_dict, diacritics_dict):
 
     logging.info ("Reading file %s..." %(file_name))
+    
     cur_sent = []
     cur_labels = []
 
@@ -41,34 +81,40 @@ def get_sent_labels_from_file(file_name, max_sentence_length, all_letters, all_d
     with open(file_name, 'r', encoding='utf-8') as f:
         for word in f: # move word by word
             word = word.strip()
-            if not word: # end of sentence    
-                if len(cur_sent) <= max_sentence_length:      
-                    total_sents.append(cur_sent)
-                    total_labels.append(cur_labels)
+            if not word: # end of sentence  
+                
+                assert len(cur_sent) == len(cur_labels)
+
+                cur_sent=cur_sent[:max_sentence_length]
+                cur_labels=cur_labels[:max_sentence_length]  
+               
+                sent_ids, label_ids = get_ids(cur_sent, cur_labels, letters_dict, diacritics_dict)
+                total_sents.append(sent_ids)
+                total_labels.append(label_ids)
+
                 cur_sent=[]
                 cur_labels=[]
 
                 continue
-    
             # get clean word and its diacritizations
             cln_word, diacrtics = get_word_labels(word)
+
             if not cln_word or not diacrtics: # empty word
                 continue
             
-            # add letters and diacritization suymbols to dicts
-            for letter in cln_word:
-                all_letters[letter]+=1
-            
-            for letter in diacrtics:
-                all_diacritics[letter]+=1
-
             cur_sent.append(cln_word)
             cur_labels.append(diacrtics)
             
             assert len(cur_sent) == len(cur_labels)
-
-        total_sents.append(cur_sent[:max_sentence_length])# trim extra length
-        total_labels.append(cur_labels[:max_sentence_length])
+        
+        # last sentence
+        if cur_sent and cur_labels:
+            cur_sent=cur_sent[:max_sentence_length]
+            cur_labels=cur_labels[:max_sentence_length]  
+            
+            sent_ids, label_ids = get_ids(cur_sent, cur_labels, letters_dict, diacritics_dict)
+            total_sents.append(sent_ids)
+            total_labels.append(label_ids)
 
     assert len(total_sents) == len(total_labels)
     return total_sents, total_labels
@@ -91,78 +137,55 @@ if __name__ == '__main__':
 
 
     logging.info("building dicts..." )
-
-    letters_dict = Counter()
-    diacritics_dict = Counter()
-
-    train_sents, train_labels=[], []
-
+    
     # iterate over training set and build dictionary
-    for fname in os.listdir(os.path.join(args.corpus_dir, 'train')):
-        fname = os.path.join(args.corpus_dir, 'train', fname)
-        sent, lbl = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
-        train_sents.append(sent)
-        train_labels.append(lbl)
-            
+    train_files = map(lambda p:os.path.join(args.corpus_dir, 'train', p), 
+    os.listdir(os.path.join(args.corpus_dir, 'train')))
+    letters_dict, diacritics_dict = build_vocab(train_files)
+      
             
     common_letters, _ = zip(*letters_dict.most_common(args.vocab_size))
     common_diacrtitics, _  = zip(*diacritics_dict.most_common(args.labels_size))
 
-    letters_to_id = dict(zip(common_letters, range(len(common_letters))))
-    diacritics_to_id = dict(zip(common_diacrtitics, range(len(common_diacrtitics))))
+    letters_dict = dict(zip(common_letters, range(len(common_letters))))
+    diacritics_dict = dict(zip(common_diacrtitics, range(len(common_diacrtitics))))
 
 
     # special symbols
-    letters_to_id['<unk>'] = len(letters_to_id)
-    letters_to_id['<pad>'] = len(letters_to_id) # <pad> symbols for letters
-    diacritics_to_id['<pad>'] = -1 # ignore symbol for labels
+    letters_dict['<unk>'] = len(letters_dict)
+    letters_dict['<pad>'] = len(letters_dict) # <pad> symbols for letters
+    diacritics_dict['<pad>'] = -1 # ignore symbol for labels
 
     logging.info('Letters dict:')
-    logging.info(letters_to_id)
+    logging.info(letters_dict)
     logging.info('Labels dict:')
-    logging.info(diacritics_to_id)
+    logging.info(diacritics_dict)
 
     #create output dir
     if not os.path.isdir(args.outdir):
         os.mkdir(args.outdir)
 
     logging.info("Saving dicts...")
-    pkl.dump(letters_to_id, open(os.path.join(args.outdir, 'letter_dict.pkl'), 'wb+'))
-    pkl.dump(diacritics_to_id, open(os.path.join(args.outdir, 'labels_dict.pkl'), 'wb+'))
+    pkl.dump(letters_dict, open(os.path.join(args.outdir, 'letter_dict.pkl'), 'wb+'))
+    pkl.dump(diacritics_dict, open(os.path.join(args.outdir, 'labels_dict.pkl'), 'wb+'))
 
 
     #train split 
 
     for split in ['train','val', 'test']:
-
         logging.info("processing split %s..." %(split))
         
-        all_sents, all_labels=[], []
+        all_sents_ids, all_labels_ids=[], []
 
-        if split=='train': # use already obtained sents
-            all_sents, all_labels = train_sents, train_labels
-        
-        else: 
-            for fname in os.listdir(os.path.join(args.corpus_dir, split)):
-                fname = os.path.join(args.corpus_dir, split,  fname)
-                sent, lbl = get_sent_labels_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
-                all_sents.extend(sent)
-                all_labels.extend(lbl)
+        for fname in os.listdir(os.path.join(args.corpus_dir, split)):
+            fname = os.path.join(args.corpus_dir, split,  fname)
+            sent, lbl = get_sent_labels_ids_from_file(fname, args.max_sentence_length, letters_dict, diacritics_dict)
+            all_sents_ids.extend(sent)
+            all_labels_ids.extend(lbl)
 
-        all_sents_ids = []
-        all_labels_ids = []
-
-        for sent, labels in zip(all_sents, all_labels):
-            sent = sum(sent, ())
-            labels = sum(labels, ())
-            sent_ids = [letters_to_id[c] if c in letters_to_id else letters_to_id['<unk>'] for c in sent]
-            label_ids = [diacritics_to_id[d] if d in diacritics_to_id else diacritics_to_id['O'] for d in labels]
-            all_sents_ids.append(sent_ids)
-            all_labels_ids.append(label_ids)
         
-        
-        all_sents_ids = pad_sequences(all_sents_ids, maxlen=args.max_sentence_length, padding='post', value=letters_to_id['<pad>'])
-        all_labels_ids = pad_sequences(all_labels_ids, maxlen=args.max_sentence_length, padding='post', value=diacritics_to_id['<pad>'])
+        all_sents_ids = pad_sequences(all_sents_ids, maxlen=args.max_sentence_length, padding='post', value=letters_dict['<pad>'])
+        all_labels_ids = pad_sequences(all_labels_ids, maxlen=args.max_sentence_length, padding='post', value=diacritics_dict['<pad>'])
 
         x_tensor = torch.LongTensor(all_sents_ids)
         y_tensor = torch.LongTensor(all_labels_ids)
