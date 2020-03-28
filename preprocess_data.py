@@ -6,7 +6,7 @@ from glob import glob
 from xml.etree import ElementTree as ET
 from utils import *
 import argparse
-
+import numpy as np 
 
 class Preprocessor():
     def __init__(self):
@@ -81,7 +81,7 @@ class Preprocessor():
             #print("DONE:", word_count)
         print("Done.")
 
-    def split(self, ratio=0.2):
+    def split(self, test_ratio=0.2, train_ratio=0.7):
         """
         This method takes a train-test ratio as an input (20% default value)
         then, it splits the preprocessed data into two directories (train, test)
@@ -90,17 +90,36 @@ class Preprocessor():
         -> train with 70 files in it.. [1, 2, 3, ... 70]
         -> test with 30 files in it ..[71, 72, ... 100]
         """
-        assert 0 <= ratio <= 1, 'Invalid Number for ratio'
-        ratio = 1. - ratio
+        assert 0 <= test_ratio <= 1 and 0 <= train_ratio <= 1, 'Invalid Number for ratio'
+        
+        val_ratio = 1 - train_ratio - test_ratio
         num_files = len(os.listdir(self.out_dir))
-        if num_files > 0:
-            train_dir = os.path.join(self.out_dir, 'train')
-            create_dir(train_dir)
-            test_dir = os.path.join(self.out_dir, 'test')
-            create_dir(test_dir)
-            test_dir = os.path.join(self.out_dir, 'test', 'gold')
-            create_dir(test_dir)
-           
+        num_files = 10
+
+        train, val, test = np.split(range(1, num_files+1), 
+            [int(train_ratio* num_files), 
+            int((train_ratio + val_ratio)* num_files)])
+        
+        print(train, val, test)
+        train_dir = os.path.join(self.out_dir, 'train')
+        create_dir(train_dir)
+        val_dir = os.path.join(self.out_dir, 'val')
+        create_dir(val_dir)
+        test_dir = os.path.join(self.out_dir, 'test')
+        create_dir(test_dir)
+        #test_dir = os.path.join(self.out_dir, 'test', 'gold')
+        #create_dir(test_dir)
+        
+        #move train, val and test files
+        for f_i in map(str, train): 
+            os.rename(os.path.join(self.out_dir, f_i), os.path.join(train_dir, f_i))
+        
+        for f_i in map(str, val): 
+            os.rename(os.path.join(self.out_dir, f_i), os.path.join(val_dir, f_i))
+
+        for f_i in map(str, test): 
+            os.rename(os.path.join(self.out_dir, f_i), os.path.join(test_dir, f_i))
+            
 
     def remove_diacritization(self):
         """This method aims at removing any diacritization from
@@ -133,6 +152,6 @@ if __name__ == "__main__":
     args= parser.parse_args()
 
     p = Preprocessor()
-    p.preprocess(args.corpus)
+    #p.preprocess(args.corpus)
     p.split(args.test_ratio)
     p.remove_diacritization()
