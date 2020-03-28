@@ -57,7 +57,7 @@ class Preprocessor():
             else:
                 with open(filename, 'r',encoding='utf-8') as fout:
                     print("****", filename)
-                    content = fout.read().decode() #convert text from bytes into string
+                    content = fout.read() #convert text from bytes into string
                     
             for sentence in re.split(r'؟|!|\.+', content):
                 sentence = re.sub(self.NOISE_REGEX, '', sentence) #remove numbers and punctuations
