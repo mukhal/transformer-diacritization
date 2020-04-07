@@ -23,11 +23,13 @@ python scripts/prepare_diacritization_dataset.py --corpus-dir data/preprocessed 
 ```
 
 
-### Experiments
-
-#### Model Params
+### Training
+I trained a 10-layer transformer model using the following parameters:
 
 ```python
+
+#Model Params
+
 embed_dim = 512
 hidden_dim = 512
 num_max_positions = 256
@@ -36,10 +38,9 @@ num_layers = 10
 dropout = 0.1
 batch_size = 64
 lr = 0.0001
-```
 
-#### Training Params
-```python
+#Training Params
+
 epochs=10
 max_norm = 5.0
 gradient_accumulation_steps= 4
