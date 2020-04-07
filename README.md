@@ -19,7 +19,6 @@ rm data/tashkeela/doc/ -r
 ```
 
 ### 3. Preprocessing
-
 ```
 python scripts/preprocess_data.py --corpus data/tashkeela/texts.txt/
 python scripts/prepare_diacritization_dataset.py --corpus-dir data/preprocessed --outdir data/tashkeela/bin
@@ -48,6 +47,7 @@ gradient_accumulation_steps= 4
 batch_size=64
 ```
 
+![loss]
 
 
 
