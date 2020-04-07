@@ -1,12 +1,12 @@
 # Transformer Diacritization
 Arabic diacritization with self-attention Transfromers. The task is a sequence labeling task with 
 
-## Steps to reproduce
+### Steps to reproduce
 
-### 1. Clone the repo
+#### 1. Clone the repo
 `git clone https://github.com/mohammadKhalifa/transformer-diacritization.git`
 
-### 2. Download Tashkeela 
+#### 2. Download Tashkeela 
 ```
 cd transformer-diacritization/
 wget https://sourceforge.net/projects/tashkeela/files/latest/download
@@ -18,7 +18,7 @@ mv data/Tashkeela-arabic-diacritized-text-utf8-0.3/ data/tashkeela
 rm data/tashkeela/doc/ -r 
 ```
 
-### 3. Preprocessing
+#### 3. Preprocessing
 ```
 python scripts/preprocess_data.py --corpus data/tashkeela/texts.txt/
 python scripts/prepare_diacritization_dataset.py --corpus-dir data/preprocessed --outdir data/tashkeela/bin
