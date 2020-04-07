@@ -1,15 +1,13 @@
 # Transformer Diacritization
 Arabic diacritization with self-attention Transfromers. The task is a sequence labeling task with 
 
-### Steps to reproduce
+### Getting Started
 
 ```
 # clone repo
-
 git clone https://github.com/mohammadKhalifa/transformer-diacritization.git`
 
 # download dataset
-
 cd transformer-diacritization/
 wget https://sourceforge.net/projects/tashkeela/files/latest/download
 
@@ -48,7 +46,10 @@ gradient_accumulation_steps= 4
 batch_size=64
 ```
 
+
 ![loss](figures/loss.png)
+
+![acc](figures/acc.png)
 
 
 
