@@ -84,10 +84,8 @@ def get_sent_labels_ids_from_file(file_name, max_sentence_length, letters_dict, 
             if not word: # end of sentence  
                 
                 assert len(cur_sent) == len(cur_labels)
-
                 cur_sent=cur_sent[:max_sentence_length]
                 cur_labels=cur_labels[:max_sentence_length]  
-               
                 sent_ids, label_ids = get_ids(cur_sent, cur_labels, letters_dict, diacritics_dict)
                 total_sents.append(sent_ids)
                 total_labels.append(label_ids)
