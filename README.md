@@ -23,7 +23,6 @@ rm data/tashkeela/doc/ -r
 ```
 python scripts/preprocess_data.py --corpus data/tashkeela/texts.txt/
 python scripts/prepare_diacritization_dataset.py --corpus-dir data/preprocessed --outdir data/tashkeela/bin
-
 ```
 
 ### Experiments
