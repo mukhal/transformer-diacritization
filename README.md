@@ -1,5 +1,5 @@
 # Transformer Diacritization
-Arabic diacritization with self-attention Transfromers. The task is a sequence labeling task with 
+Arabic diacritization with self-attention Transfromers. The task is a sequence labeling task where the goal is to label each character with its correct diacritic.
 
 ### Getting Started
 
@@ -46,10 +46,8 @@ gradient_accumulation_steps= 4
 batch_size=64
 ```
 
-
 ![loss](figures/loss.png)
 
-![acc](figures/acc.png)
 
 
 
