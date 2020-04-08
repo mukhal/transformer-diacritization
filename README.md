@@ -47,8 +47,9 @@ gradient_accumulation_steps= 4
 batch_size=64
 ```
 
-![loss](figures/loss.png)
+![loss](figures/loss_epoch4.png)
 
+![acc](figures/acc_epoch4.png)
 
 
 
