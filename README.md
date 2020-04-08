@@ -27,18 +27,12 @@ python scripts/prepare_diacritization_dataset.py --corpus-dir data/preprocessed 
 I trained a 10-layer transformer model using the following parameters:
 
 
-| Tables        | Are           | 
-| ------------- |:-------------:|
-| embedding dim    | 512       | 
-| feedforward      | 512       |  
-| layers           | 10        | 
-
 ```python
 
 #Model Params
 
-embedding dim = 512
-hidden dim = 512
+embedding_dim = 512
+hidden_dim = 512
 num_max_positions = 256
 num_attention_heads = 8
 num_layers = 10
